@@ -1,0 +1,55 @@
+#!/usr/bin/python3
+
+import argparse
+import subprocess
+import os
+
+
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def parse_args() -> argparse.Namespace:
+    """Setup parser and parse command line args."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("day", type=int, help="Day to run")
+    parser.add_argument(
+        "--compile",
+        action="store_true",
+        help="Compile source file before running",
+    )
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Run with test input instead of real input",
+    )
+
+    return parser.parse_args()
+
+
+def main() -> None:
+    """
+    Main runner. Parse args and run a day's script (and optionally compile).
+    """
+    pargs = parse_args()
+
+    if not 1 <= pargs.day <= 25:
+        raise ValueError("Day must be between 1 and 25")
+
+    day_str = f"day_{pargs.day:02}"
+    day_c_file = os.path.join(THIS_DIR, f"src/{day_str}.c")
+    day_obj_file = os.path.join(THIS_DIR, f"src/{day_str}")
+    day_input = os.path.join(THIS_DIR, f"data/{day_str}_input.txt")
+    day_test_input = os.path.join(THIS_DIR, f"data/{day_str}_test_input.txt")
+
+    if pargs.compile:
+        subprocess.run(
+            ["clang", "-g", "-Wall", day_c_file, "-o", day_obj_file],
+            check=True,
+        )
+
+    txt_file = day_input if not pargs.test else day_test_input
+    subprocess.run([day_obj_file, txt_file], check=True)
+
+
+if __name__ == "__main__":
+    main()
