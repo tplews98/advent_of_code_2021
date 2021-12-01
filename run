@@ -1,8 +1,12 @@
 #!/usr/bin/python3
 
+"""Runner for Advent of Code 2021 executables."""
+
+
 import argparse
 import subprocess
 import os
+import time
 
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -18,12 +22,52 @@ def parse_args() -> argparse.Namespace:
         help="Compile source file before running",
     )
     parser.add_argument(
+        "--valgrind",
+        action="store_true",
+        help="Run with valgrind to test for memory leaks",
+    )
+    parser.add_argument(
         "--test",
         action="store_true",
         help="Run with test input instead of real input",
     )
+    parser.add_argument(
+        "--time",
+        action="store_true",
+        help=(
+            "Print the time to run the executable (including python "
+            "subprocess time)"
+        ),
+    )
 
     return parser.parse_args()
+
+
+def check_mutually_exclusive_arguments(pargs: argparse.Namespace) -> None:
+    """
+    Check if any mutually exclusive arguments have been given. Raise error if
+    so.
+    """
+    template = "Cannot use {arg_1} and {arg_2} together"
+
+    if pargs.compile:
+        if pargs.test:
+            raise Exception(template.format(arg_1="--compile", arg_2="--test"))
+        if pargs.valgrind:
+            raise Exception(
+                template.format(arg_1="--compile", arg_2="--valgrind")
+            )
+
+
+def run_cmd(cmd: list[str], *, print_time: bool = False) -> None:
+    """Run a subprocess command and optionally print the time to run it."""
+    start = time.perf_counter()
+    subprocess.run(cmd, check=True)
+    end = time.perf_counter()
+    if print_time:
+        print(
+            f"Time to run (including python subprocess time): {end-start:.9f}s"
+        )
 
 
 def main() -> None:
@@ -35,20 +79,43 @@ def main() -> None:
     if not 1 <= pargs.day <= 25:
         raise ValueError("Day must be between 1 and 25")
 
+    check_mutually_exclusive_arguments(pargs)
+
     day_str = f"day_{pargs.day:02}"
     day_c_file = os.path.join(THIS_DIR, f"src/{day_str}.c")
+    utils_file = os.path.join(THIS_DIR, "src/utils.c")
     day_obj_file = os.path.join(THIS_DIR, f"src/{day_str}")
     day_input = os.path.join(THIS_DIR, f"data/{day_str}_input.txt")
     day_test_input = os.path.join(THIS_DIR, f"data/{day_str}_test_input.txt")
 
     if pargs.compile:
-        subprocess.run(
-            ["clang", "-g", "-Wall", day_c_file, "-o", day_obj_file],
-            check=True,
-        )
+        cmd = [
+            "clang",
+            "-g",
+            "-Wall",
+            day_c_file,
+            utils_file,
+            "-o",
+            day_obj_file,
+        ]
+        run_cmd(cmd, print_time=pargs.time)
+    else:
+        txt_file = day_input if not pargs.test else day_test_input
 
-    txt_file = day_input if not pargs.test else day_test_input
-    subprocess.run([day_obj_file, txt_file], check=True)
+        if not os.path.exists(day_obj_file):
+            raise FileNotFoundError(
+                f"'{day_obj_file}' does not exist, try --compile first"
+            )
+        if not os.path.exists(txt_file):
+            raise FileNotFoundError(
+                f"'{txt_file}' does not exist, have you created the input"
+                " file?"
+            )
+
+        cmd = [day_obj_file, txt_file]
+        if pargs.valgrind:
+            cmd.insert(0, "valgrind")
+        run_cmd(cmd, print_time=pargs.time)
 
 
 if __name__ == "__main__":
