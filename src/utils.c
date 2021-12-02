@@ -146,3 +146,20 @@ parse_text_to_ints(parsed_text_type parsed_text)
 
     return (numbers_array);
 }
+
+/*
+ * Doc in utils.h
+ */
+void
+print_elapsed_time(double runtime_ns, char *description)
+{
+    if (runtime_ns > 1000000000) {
+        printf("%s: %.3fs\n", description, runtime_ns / 1000000000);
+    } else if (runtime_ns > 1000000) {
+        printf("%s: %.3fms\n", description, runtime_ns / 1000000);
+    } else if (runtime_ns > 1000) {
+        printf("%s: %.3fus\n", description, runtime_ns / 1000);
+    } else {
+        printf("%s: %.0fns\n", description, runtime_ns);
+    }
+}

@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <time.h>
 
 #ifndef __UTILS_H__
 #define __UTILS_H__
@@ -75,5 +76,20 @@ void free_parse_text(parsed_text_type parsed_text);
  *
  */
 int *parse_text_to_ints(parsed_text_type parsed_text);
+
+/*
+ * print_elapsed_time
+ *
+ * Print the elapsed time with an appropriate unit.
+ *
+ * Argument: elapsed_time_ns
+ *     Time in nanoseconds.
+ * Argument: description
+ *     What the time is that was measured, printed before the time.
+ *
+ * Return: void
+ *
+ */
+void print_elapsed_time(double elapsed_time_ns, char *description);
 
 #endif /* __UTILS_H__ */

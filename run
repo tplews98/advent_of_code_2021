@@ -64,10 +64,17 @@ def run_cmd(cmd: list[str], *, print_time: bool = False) -> None:
     start = time.perf_counter()
     subprocess.run(cmd, check=True)
     end = time.perf_counter()
+    total_time = end - start
     if print_time:
-        print(
-            f"Time to run (including python subprocess time): {end-start:.9f}s"
-        )
+        if total_time > 1:
+            time_str = f"{total_time:.3f}s"
+        elif total_time > 10 ** -3:
+            time_str = f"{total_time * 10 ** 3:.3f}ms"
+        elif total_time > 10 ** -6:
+            time_str = f"{total_time * 10 ** 6:.3f}us"
+        else:
+            time_str = f"{total_time * 10 ** 9:.0f}ns"
+        print(f"Time to run (including python subprocess time): {time_str}")
 
 
 def main() -> None:

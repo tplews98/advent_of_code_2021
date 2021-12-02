@@ -8,7 +8,7 @@
  * find_number_increasing
  *
  * Find the number of occurances where for an index i, the sum of the elements
- * i, i-1, ..., i-num_previous_to_add are smaller than the sum of the elements
+ * i, i-1, ..., i-num_previous_to_add is smaller than the sum of the elements
  * i-1, i-2, ..., i-num_previous_to_add-1.
  *
  * Argument: numbers_array
@@ -55,10 +55,13 @@ find_number_increasing(int    *numbers_array,
 int
 main(int argc, char **argv)
 {
+    struct timespec   start_time, end_time;
     int               rc = 0;
     char             *file_name = NULL;
     parsed_text_type  parsed_text;
     int              *numbers_array = NULL;
+
+    clock_gettime(CLOCK_MONOTONIC_RAW, &start_time);
 
     assert(argc == 2);
     file_name = argv[1];
@@ -74,6 +77,9 @@ main(int argc, char **argv)
 
     free(numbers_array);
     free_parse_text(parsed_text);
+
+    clock_gettime(CLOCK_MONOTONIC_RAW, &end_time);
+    print_elapsed_time(end_time.tv_nsec - start_time.tv_nsec, "Runtime");
 
     return (rc);
 }
