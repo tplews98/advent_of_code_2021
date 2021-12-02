@@ -3,6 +3,8 @@
 """Runner for Advent of Code 2021 executables."""
 
 
+from __future__ import annotations
+
 import argparse
 import subprocess
 import os
@@ -99,6 +101,7 @@ def main() -> None:
         cmd = [
             "clang",
             "-g",
+            "-O3",
             "-Wall",
             day_c_file,
             utils_file,
