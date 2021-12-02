@@ -10,4 +10,5 @@ should be `day_xx_input.txt`, and test input `day_xx_test_input.txt`.
 
 To run a day's code, do `./run <day>`.
 To compile a day's code, do `./run <day> --compile`.
-To compile a day's code with test input, do `./run <day> --test`.
+To run a day's code with test input, do `./run <day> --test`.
+To run a day's code under valgrind to check for memory leaks, use `--valgrind`.
