@@ -78,6 +78,19 @@ void free_parse_text(parsed_text_type parsed_text);
 int *parse_text_to_ints(parsed_text_type parsed_text);
 
 /*
+ * parse_binary_num_text_to_ints
+ *
+ * Parse text of binary numbers into array of integers.
+ *
+ * Argument: parsed_text
+ *     Parsed text struct, where each line is an binary number.
+ *
+ * Return: int *
+ *
+ */
+int *parse_binary_num_text_to_ints(parsed_text_type parsed_text);
+
+/*
  * print_elapsed_time
  *
  * Print the elapsed time with an appropriate unit.

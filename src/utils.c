@@ -150,6 +150,25 @@ parse_text_to_ints(parsed_text_type parsed_text)
 /*
  * Doc in utils.h
  */
+int *
+parse_binary_num_text_to_ints(parsed_text_type parsed_text)
+{
+    int    *numbers_array = NULL;
+    size_t  i;
+
+    numbers_array = malloc(parsed_text.num_lines * sizeof(int));
+    assert(numbers_array != NULL);
+
+    for (i = 0; i < parsed_text.num_lines; i++) {
+        numbers_array[i] = strtol(parsed_text.lines[i].line, NULL, 2);
+    }
+
+    return (numbers_array);
+}
+
+/*
+ * Doc in utils.h
+ */
 void
 print_elapsed_time(double runtime_ns, char *description)
 {
