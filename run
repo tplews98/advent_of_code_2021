@@ -40,6 +40,18 @@ def parse_args() -> argparse.Namespace:
                 raise Exception(
                     template.format(arg_1="--compile", arg_2="--valgrind")
                 )
+            if pargs.gdb:
+                raise Exception(
+                    template.format(arg_1="--compile", arg_2="--gdb")
+                )
+
+        if pargs.gdb:
+            if pargs.valgrind:
+                raise Exception(
+                    template.format(arg_1="--valgrind", arg_2="--gdb")
+                )
+            if pargs.day == "all":
+                raise Exception("Can only use --gdb with a single day")
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -54,6 +66,11 @@ def parse_args() -> argparse.Namespace:
         "--valgrind",
         action="store_true",
         help="Run with valgrind to test for memory leaks",
+    )
+    parser.add_argument(
+        "--gdb",
+        action="store_true",
+        help="Run with gdb",
     )
     parser.add_argument(
         "--test",
@@ -198,6 +215,8 @@ def main() -> None:
             cmd = [day_obj_file, txt_file]
             if pargs.valgrind:
                 cmd.insert(0, "valgrind")
+            if pargs.gdb:
+                cmd = ["gdb", "--args"] + cmd
 
             print(f"----- Day {day} -----")
             run_cmd(cmd, print_time=pargs.time)
