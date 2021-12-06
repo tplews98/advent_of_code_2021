@@ -70,7 +70,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--gdb",
         action="store_true",
-        help="Run with gdb",
+        help=(
+            "Run with gdb. This will recompile without optimisation before "
+            "and also recompile with optimisation afterwards"
+        ),
     )
     parser.add_argument(
         "--test",
@@ -196,19 +199,27 @@ def main() -> None:
         day_input = DAY_INPUT.format(day=f"{day:02}")
         day_test_input = DAY_TEST_INPUT.format(day=f"{day:02}")
 
-        if pargs.compile:
+        def _compile(with_optimisation: bool = True) -> None:
+            """Compile a days source file"""
             cmd = [
                 "clang",
                 "-g",
-                "-O3",
                 "-Wall",
                 day_c_file,
                 UTILS_FILE,
                 "-o",
                 day_obj_file,
             ]
-            print(f"----- Compiling day {day} -----")
+            if with_optimisation:
+                cmd.append("-O3")
+            print(
+                f"----- Compiling day {day} with"
+                f"{'' if with_optimisation else 'out'} optimisation -----"
+            )
             run_cmd(cmd, print_time=pargs.time)
+
+        if pargs.compile:
+            _compile()
         else:
             txt_file = day_input if not pargs.test else day_test_input
 
@@ -216,11 +227,14 @@ def main() -> None:
             if pargs.valgrind:
                 cmd.insert(0, "valgrind")
             if pargs.gdb:
+                _compile(with_optimisation=False)
                 cmd = ["gdb", "--args"] + cmd
 
             print(f"----- Day {day} -----")
             run_cmd(cmd, print_time=pargs.time)
 
+            if pargs.gdb:
+                _compile()
 
 if __name__ == "__main__":
     main()

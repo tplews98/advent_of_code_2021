@@ -431,7 +431,7 @@ main(int argc, char **argv)
            oxygen_rating * c02_rating);
 
     free(numbers_array);
-    free_parse_text(parsed_text);
+    free_parsed_text(parsed_text);
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &end_time);
     print_elapsed_time(end_time.tv_nsec - start_time.tv_nsec, "Runtime");

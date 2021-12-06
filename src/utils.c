@@ -8,7 +8,7 @@
  * LINE_BUF_SIZE:
  *     Maximum length of a line read from the file.
  */
-#define LINE_BUF_SIZE 120
+#define LINE_BUF_SIZE 300
 
 /*
  * initialise_parsed_text_type
@@ -114,7 +114,7 @@ parse_file(char *file_name)
  * Doc in utils.h
  */
 void
-free_parse_text(parsed_text_type parsed_text)
+free_parsed_text(parsed_text_type parsed_text)
 {
     size_t i;
 
@@ -164,6 +164,55 @@ parse_binary_num_text_to_ints(parsed_text_type parsed_text)
     }
 
     return (numbers_array);
+}
+
+/*
+ * Doc in utils.h
+ */
+parsed_text_type
+split_string_on_char(char *text, char split_on)
+{
+    size_t            i;
+    char              split_on_str[2] = "";
+    char             *text_copy;
+    char             *token;
+    parsed_text_type  parsed_text;
+
+    split_on_str[0] = split_on;
+    initialise_parsed_text_type(&parsed_text);
+
+    /*
+     * Figure out how many splits we need to do to later allocate the required
+     * memory.
+     */
+    text_copy = strndup(text, strlen(text));
+    token = strtok(text_copy, split_on_str);
+    while (token != NULL) {
+        parsed_text.num_lines++;
+        token = strtok(NULL, split_on_str);
+    }
+    free(text_copy);
+
+    parsed_text.lines = malloc(
+                             parsed_text.num_lines * sizeof(parsed_line_type));
+    assert(parsed_text.lines != NULL);
+
+    /*
+     * Redo the splitting, this time filling the allocated array.
+     */
+    text_copy = strndup(text, strlen(text));
+    token = strtok(text_copy, split_on_str);
+    i = 0;
+    while (token != NULL) {
+        parsed_text.lines[i].line = strndup(token, strlen(token) + 1);
+        parsed_text.lines[i].len = strlen(parsed_text.lines[i].line);
+        i++;
+
+        token = strtok(NULL, split_on_str);
+    }
+    free(text_copy);
+
+    return (parsed_text);
 }
 
 /*

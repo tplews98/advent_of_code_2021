@@ -52,7 +52,7 @@ typedef struct Parsed_Text {
 parsed_text_type parse_file(char *file_name);
 
 /*
- * free_parse_text
+ * free_parsed_text
  *
  * Free allocated memory from the parsed_text struct.
  *
@@ -62,7 +62,7 @@ parsed_text_type parse_file(char *file_name);
  * Return: void
  *
  */
-void free_parse_text(parsed_text_type parsed_text);
+void free_parsed_text(parsed_text_type parsed_text);
 
 /*
  * parse_text_to_ints
@@ -89,6 +89,23 @@ int *parse_text_to_ints(parsed_text_type parsed_text);
  *
  */
 int *parse_binary_num_text_to_ints(parsed_text_type parsed_text);
+
+/*
+ * split_string_on_char
+ *
+ * Split given text on a character. If there are consecutive characters which
+ * are all the split_on character, they are ignored (only split once and rest
+ * do not caused another split but are skipped over).
+ *
+ * Argument: text
+ *     Text to split on.
+ * Argument: split_on
+ *     Character to split on.
+ *
+ * Return: parsed_text_type
+ *
+ */
+parsed_text_type split_string_on_char(char *text, char split_on);
 
 /*
  * print_elapsed_time
