@@ -182,40 +182,74 @@ calculate_final_position_part_2(parsed_text_type parsed_text)
 }
 
 /*
+ * runner
+ *
+ * Function which performs the days task. Repeat multiple times to benchmark.
+ *
+ * Argument: file_name
+ *     File to read input from.
+ * Argument: print_output
+ *     Whether to print output or not. This should only be done on the final
+ *     run to not spam the console.
+ *
+ * Return: void
+ */
+static void
+runner(char *file_name, bool print_output)
+{
+    parsed_text_type  parsed_text;
+    position_type     final_position;
+
+    parsed_text = parse_file(file_name);
+
+    final_position = calculate_final_position_part_1(parsed_text);
+    if (print_output) {
+        printf("Part 1: Horizontal = %d, Depth = %d, H*D = %d\n",
+               final_position.horizontal,
+               final_position.depth,
+               final_position.horizontal * final_position.depth);
+    }
+
+    final_position = calculate_final_position_part_2(parsed_text);
+    if (print_output) {
+        printf("Part 2: Horizontal = %d, Depth = %d, H*D = %d\n",
+               final_position.horizontal,
+               final_position.depth,
+               final_position.horizontal * final_position.depth);
+    }
+
+    free_parsed_text(parsed_text);
+}
+
+/*
  * Main function.
  */
 int
 main(int argc, char **argv)
 {
-    struct timespec   start_time, end_time;
-    int               rc = 0;
-    char             *file_name = NULL;
-    parsed_text_type  parsed_text;
-    position_type     final_position;
-
-    clock_gettime(CLOCK_MONOTONIC_RAW, &start_time);
+    struct timespec  start_time, end_time;
+    int              rc = 0;
+    char            *file_name = NULL;
+    size_t           i;
 
     assert(argc == 2);
     file_name = argv[1];
 
-    parsed_text = parse_file(file_name);
+    clock_gettime(CLOCK_MONOTONIC_RAW, &start_time);
 
-    final_position = calculate_final_position_part_1(parsed_text);
-    printf("Part 1: Horizontal = %d, Depth = %d, H*D = %d\n",
-           final_position.horizontal,
-           final_position.depth,
-           final_position.horizontal * final_position.depth);
-
-    final_position = calculate_final_position_part_2(parsed_text);
-    printf("Part 2: Horizontal = %d, Depth = %d, H*D = %d\n",
-           final_position.horizontal,
-           final_position.depth,
-           final_position.horizontal * final_position.depth);
-
-    free_parsed_text(parsed_text);
+    for (i = 0; i < NUM_TIMES_TO_BENCHMARK; i++) {
+        runner(file_name, false);
+    }
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &end_time);
-    print_elapsed_time(end_time.tv_nsec - start_time.tv_nsec, "Runtime");
+
+    /* Run a final time to actually print output and print average runtime */
+    runner(file_name, true);
+    print_elapsed_time(
+              ((end_time.tv_sec - start_time.tv_sec) * 1000000000 +
+              (end_time.tv_nsec - start_time.tv_nsec))
+              / NUM_TIMES_TO_BENCHMARK,
+              "Runtime");
 
     return (rc);
 }

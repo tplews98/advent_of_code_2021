@@ -18,10 +18,10 @@
  * Argument: num_previous_to_add
  *     Number of values to consider in sum.
  *
- * Return: void
+ * Return: size_t
  *
  */
-int
+size_t
 find_number_increasing(int    *numbers_array,
                        size_t  len,
                        size_t  num_previous_to_add)
@@ -50,36 +50,75 @@ find_number_increasing(int    *numbers_array,
 }
 
 /*
- * Main function.
+ * runner
+ *
+ * Function which performs the days task. Repeat multiple times to benchmark.
+ *
+ * Argument: file_name
+ *     File to read input from.
+ * Argument: print_output
+ *     Whether to print output or not. This should only be done on the final
+ *     run to not spam the console.
+ *
+ * Return: void
  */
-int
-main(int argc, char **argv)
+static void
+runner(char *file_name, bool print_output)
 {
-    struct timespec   start_time, end_time;
-    int               rc = 0;
-    char             *file_name = NULL;
     parsed_text_type  parsed_text;
     int              *numbers_array = NULL;
-
-    clock_gettime(CLOCK_MONOTONIC_RAW, &start_time);
-
-    assert(argc == 2);
-    file_name = argv[1];
+    size_t            num_increasing;
 
     parsed_text = parse_file(file_name);
 
     numbers_array = parse_text_to_ints(parsed_text);
 
-    printf("Part 1: Number of increasing depths = %d\n",
-           find_number_increasing(numbers_array, parsed_text.num_lines, 1));
-    printf("Part 2: Number of increasing last 3 depths = %d\n",
-           find_number_increasing(numbers_array, parsed_text.num_lines, 3));
+    num_increasing = find_number_increasing(numbers_array,
+                                            parsed_text.num_lines, 1);
+    if (print_output) {
+        printf("Part 1: Number of increasing depths = %zu\n", num_increasing);
+    }
+
+    num_increasing = find_number_increasing(numbers_array,
+                                            parsed_text.num_lines, 3);
+    if (print_output) {
+        printf("Part 2: Number of increasing last 3 depths = %zu\n",
+               num_increasing);
+    }
 
     free(numbers_array);
     free_parsed_text(parsed_text);
+}
+
+/*
+ * Main function.
+ */
+int
+main(int argc, char **argv)
+{
+    struct timespec  start_time, end_time;
+    int              rc = 0;
+    char            *file_name = NULL;
+    size_t           i;
+
+    assert(argc == 2);
+    file_name = argv[1];
+
+    clock_gettime(CLOCK_MONOTONIC_RAW, &start_time);
+
+    for (i = 0; i < NUM_TIMES_TO_BENCHMARK; i++) {
+        runner(file_name, false);
+    }
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &end_time);
-    print_elapsed_time(end_time.tv_nsec - start_time.tv_nsec, "Runtime");
+
+    /* Run a final time to actually print output and print average runtime */
+    runner(file_name, true);
+    print_elapsed_time(
+              ((end_time.tv_sec - start_time.tv_sec) * 1000000000 +
+              (end_time.tv_nsec - start_time.tv_nsec))
+              / NUM_TIMES_TO_BENCHMARK,
+              "Runtime");
 
     return (rc);
 }

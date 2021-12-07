@@ -12,6 +12,9 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
+/* Number of times to run main function to benchmark */
+#define NUM_TIMES_TO_BENCHMARK 500
+
 /*
  * parsed_line
  *

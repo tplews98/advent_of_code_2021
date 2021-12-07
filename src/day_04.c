@@ -402,14 +402,21 @@ find_last_winner(bingo_calls_type  bingo_calls,
 }
 
 /*
- * Main function.
+ * runner
+ *
+ * Function which performs the days task. Repeat multiple times to benchmark.
+ *
+ * Argument: file_name
+ *     File to read input from.
+ * Argument: print_output
+ *     Whether to print output or not. This should only be done on the final
+ *     run to not spam the console.
+ *
+ * Return: void
  */
-int
-main(int argc, char **argv)
+static void
+runner(char *file_name, bool print_output)
 {
-    struct timespec   start_time, end_time;
-    int               rc = 0;
-    char             *file_name = NULL;
     parsed_text_type  parsed_text;
     bingo_calls_type  bingo_calls;
     bingo_cards_type  bingo_cards;
@@ -419,37 +426,64 @@ main(int argc, char **argv)
     int               last_number;
     int               card_score;
 
-    clock_gettime(CLOCK_MONOTONIC_RAW, &start_time);
-
-    assert(argc == 2);
-    file_name = argv[1];
-
     parsed_text = parse_file(file_name);
 
     parse_lines_into_calls_and_cards(parsed_text, &bingo_calls, &bingo_cards);
 
     line_winner = find_bingo_winner(bingo_calls, bingo_cards, &winning_number);
     card_score = find_sum_of_unmarked_numbers(line_winner);
-    printf("Part 1: Winning number = %d, Card score = %d, N*S = %d\n",
-           winning_number,
-           card_score,
-           winning_number * card_score);
+    if (print_output) {
+        printf("Part 1: Winning number = %d, Card score = %d, N*S = %d\n",
+               winning_number,
+               card_score,
+               winning_number * card_score);
+    }
 
     last_winner = find_last_winner(bingo_calls, bingo_cards, &last_number);
     card_score = find_sum_of_unmarked_numbers(last_winner);
-    printf("Part 2: Last winning number = %d, Card score = %d, N*S = %d\n",
-           last_number,
-           card_score,
-           last_number * card_score);
+    if (print_output) {
+        printf("Part 2: Last winning number = %d, Card score = %d, N*S = %d\n",
+               last_number,
+               card_score,
+               last_number * card_score);
+    }
 
     free(bingo_cards.cards);
     bingo_cards.cards = NULL;
     free(bingo_calls.calls);
     bingo_calls.calls = NULL;
     free_parsed_text(parsed_text);
+}
+
+/*
+ * Main function.
+ */
+int
+main(int argc, char **argv)
+{
+    struct timespec  start_time, end_time;
+    int              rc = 0;
+    char            *file_name = NULL;
+    size_t           i;
+
+    assert(argc == 2);
+    file_name = argv[1];
+
+    clock_gettime(CLOCK_MONOTONIC_RAW, &start_time);
+
+    for (i = 0; i < NUM_TIMES_TO_BENCHMARK; i++) {
+        runner(file_name, false);
+    }
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &end_time);
-    print_elapsed_time(end_time.tv_nsec - start_time.tv_nsec, "Runtime");
+
+    /* Run a final time to actually print output and print average runtime */
+    runner(file_name, true);
+    print_elapsed_time(
+              ((end_time.tv_sec - start_time.tv_sec) * 1000000000 +
+              (end_time.tv_nsec - start_time.tv_nsec))
+              / NUM_TIMES_TO_BENCHMARK,
+              "Runtime");
 
     return (rc);
 }
