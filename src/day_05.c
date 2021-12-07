@@ -171,6 +171,62 @@ fill_in_grid_with_non_diagonal_lines(grid_type  grid,
 }
 
 /*
+ * fill_in_grid_with_diagonal_lines
+ *
+ * Add the diagonal lines only to the grid.
+ *
+ * Argument: grid
+ *     Grid to fill. Non-diagonal lines should have already been added.
+ * Argument: lines
+ *     Array of line structs to fill the grid with. Any non-diagonal lines are
+ *     skipped.
+ * Argument: num_lines
+ *     Number of lines in the array.
+ *
+ * Return: void
+ */
+static void
+fill_in_grid_with_diagonal_lines(grid_type  grid,
+                                 line_type *lines,
+                                 size_t     num_lines)
+{
+    size_t i, x, y;
+    bool   x_increasing, y_increasing;
+
+    for (i = 0; i < num_lines; i++) {
+        if (lines[i].x_start != lines[i].x_end
+            && lines[i].y_start != lines[i].y_end) {
+            // Diagonal line. Make sure it has a gradient of 1.
+            assert(abs(lines[i].x_end - lines[i].x_start)
+                   == abs(lines[i].y_end - lines[i].y_start));
+
+            x_increasing = (lines[i].x_end > lines[i].x_start);
+            y_increasing = (lines[i].y_end > lines[i].y_start);
+            for (x = lines[i].x_start, y = lines[i].y_start;;) {
+                grid.columns[x][y]++;
+                if (x == lines[i].x_end || y == lines[i].y_end) {
+                    // At the end of the line.
+                    break;
+                }
+                if (x_increasing) {
+                    x++;
+                } else {
+                    x--;
+                }
+                if (y_increasing) {
+                    y++;
+                } else {
+                    y--;
+                }
+            }
+        } else {
+            // A non-diagonal line, skip.
+            continue;
+        }
+    }
+}
+
+/*
  * find_number_of_intersecting_lines
  *
  * Finds the number of grid positions where at least two lines overlap.
@@ -222,9 +278,12 @@ main(int argc, char **argv)
     parse_lines_and_make_grid(parsed_text, &grid, &lines);
 
     fill_in_grid_with_non_diagonal_lines(grid, lines, parsed_text.num_lines);
-
     num_intersecting = find_number_of_intersecting_lines(grid);
     printf("Part 1: Number of intersecting lines = %zu\n", num_intersecting);
+
+    fill_in_grid_with_diagonal_lines(grid, lines, parsed_text.num_lines);
+    num_intersecting = find_number_of_intersecting_lines(grid);
+    printf("Part 2: Number of intersecting lines = %zu\n", num_intersecting);
 
     if (grid.columns != NULL) {
         for (i = 0; i <= grid.max_x; i++) {
