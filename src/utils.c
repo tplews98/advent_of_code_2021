@@ -11,6 +11,34 @@
 #define LINE_BUF_SIZE 300
 
 /*
+ * Doc in utils.h
+ */
+void *
+malloc_f(size_t size)
+{
+    void *ptr = NULL;
+
+    ptr = malloc(size);
+    assert(ptr != NULL);
+
+    return (ptr);
+}
+
+/*
+ * Doc in utils.h
+ */
+void *
+calloc_f(size_t nmemb, size_t size)
+{
+    void *ptr = NULL;
+
+    ptr = calloc(nmemb, size);
+    assert(ptr != NULL);
+
+    return (ptr);
+}
+
+/*
  * initialise_parsed_text_type
  *
  * Sets the input parsed_text struct elements to their initial values.
@@ -81,9 +109,8 @@ parse_file(char *file_name)
         /*
          * Alloc the required space for the number of lines in the file.
          */
-        parsed_text.lines = malloc(
+        parsed_text.lines = malloc_f(
                              parsed_text.num_lines * sizeof(parsed_line_type));
-        assert(parsed_text.lines != NULL);
 
         /*
          * Parse each row into the instructions array.
@@ -137,8 +164,7 @@ parse_text_to_ints(parsed_text_type parsed_text)
     int    *numbers_array = NULL;
     size_t  i;
 
-    numbers_array = malloc(parsed_text.num_lines * sizeof(int));
-    assert(numbers_array != NULL);
+    numbers_array = malloc_f(parsed_text.num_lines * sizeof(int));
 
     for (i = 0; i < parsed_text.num_lines; i++) {
         numbers_array[i] = atoi(parsed_text.lines[i].line);
@@ -156,8 +182,7 @@ parse_binary_num_text_to_ints(parsed_text_type parsed_text)
     int    *numbers_array = NULL;
     size_t  i;
 
-    numbers_array = malloc(parsed_text.num_lines * sizeof(int));
-    assert(numbers_array != NULL);
+    numbers_array = malloc_f(parsed_text.num_lines * sizeof(int));
 
     for (i = 0; i < parsed_text.num_lines; i++) {
         numbers_array[i] = strtol(parsed_text.lines[i].line, NULL, 2);
@@ -193,9 +218,8 @@ split_string_on_char(char *text, char split_on)
     }
     free(text_copy);
 
-    parsed_text.lines = malloc(
+    parsed_text.lines = malloc_f(
                              parsed_text.num_lines * sizeof(parsed_line_type));
-    assert(parsed_text.lines != NULL);
 
     /*
      * Redo the splitting, this time filling the allocated array.
