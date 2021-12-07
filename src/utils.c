@@ -268,3 +268,29 @@ print_elapsed_time(double runtime_ns, char *description)
         printf("%s: %.0fns\n", description, runtime_ns);
     }
 }
+
+/*
+ * Doc in utils.h
+ */
+void
+run_main_func_with_benchmark(void (*func)(char *, bool), char *file_name)
+{
+    struct timespec  start_time, end_time;
+    size_t           i;
+
+    clock_gettime(CLOCK_MONOTONIC_RAW, &start_time);
+
+    for (i = 0; i < NUM_TIMES_TO_BENCHMARK; i++) {
+        func(file_name, false);
+    }
+
+    clock_gettime(CLOCK_MONOTONIC_RAW, &end_time);
+
+    /* Run a final time to actually print output and print average runtime */
+    func(file_name, true);
+    print_elapsed_time(
+              ((end_time.tv_sec - start_time.tv_sec) * 1000000000 +
+              (end_time.tv_nsec - start_time.tv_nsec))
+              / NUM_TIMES_TO_BENCHMARK,
+              "Runtime");
+}

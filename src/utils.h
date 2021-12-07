@@ -147,4 +147,22 @@ parsed_text_type split_string_on_char(char *text, char split_on);
  */
 void print_elapsed_time(double elapsed_time_ns, char *description);
 
+/*
+ * run_main_func_with_benchmark
+ *
+ * Run a day's runner function NUM_TIMES_TO_BENCHMARK times and print the
+ * average time for each run.
+ *
+ * Argument: func
+ *     A day's runner function. Must take two parameters: a char* file_name
+ *     and a bool which determines if output should be printed. Output should
+ *     only be printed on the final run.
+ * Argument: file_name
+ *     File to read input from.
+ *
+ * Return: void
+ *
+ */
+void run_main_func_with_benchmark(void (*func)(char *, bool), char *file_name);
+
 #endif /* __UTILS_H__ */

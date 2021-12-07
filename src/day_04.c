@@ -461,29 +461,12 @@ runner(char *file_name, bool print_output)
 int
 main(int argc, char **argv)
 {
-    struct timespec  start_time, end_time;
-    int              rc = 0;
-    char            *file_name = NULL;
-    size_t           i;
+    char *file_name = NULL;
 
     assert(argc == 2);
     file_name = argv[1];
 
-    clock_gettime(CLOCK_MONOTONIC_RAW, &start_time);
+    run_main_func_with_benchmark(runner, file_name);
 
-    for (i = 0; i < NUM_TIMES_TO_BENCHMARK; i++) {
-        runner(file_name, false);
-    }
-
-    clock_gettime(CLOCK_MONOTONIC_RAW, &end_time);
-
-    /* Run a final time to actually print output and print average runtime */
-    runner(file_name, true);
-    print_elapsed_time(
-              ((end_time.tv_sec - start_time.tv_sec) * 1000000000 +
-              (end_time.tv_nsec - start_time.tv_nsec))
-              / NUM_TIMES_TO_BENCHMARK,
-              "Runtime");
-
-    return (rc);
+    return (0);
 }
