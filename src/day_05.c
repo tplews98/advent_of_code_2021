@@ -46,7 +46,7 @@ typedef struct Line {
 } line_type;
 
 /*
- * parse_line_entries
+ * parse_text_into_line_type
  *
  * Parse text into a line type. The text should be in the form:
  *   "x_start,y_start -> x_end,y_end"
@@ -73,7 +73,7 @@ parse_text_into_line_type(char *text)
 }
 
 /*
- * parse_line_entries
+ * parse_lines_and_make_grid
  *
  * Parse text into an array of line_types. Each line in the text is of the form
  *   "x_start,y_start -> x_end,y_end"
@@ -102,7 +102,7 @@ parse_lines_and_make_grid(parsed_text_type   parsed_text,
     grid->max_y = 0;
     *lines = NULL;
 
-    *lines = malloc_f(parsed_text.num_lines * sizeof(line_type));
+    *lines = malloc_b(parsed_text.num_lines * sizeof(line_type));
 
     for (i = 0; i < parsed_text.num_lines; i++) {
         (*lines)[i] = parse_text_into_line_type(parsed_text.lines[i].line);
@@ -118,10 +118,10 @@ parse_lines_and_make_grid(parsed_text_type   parsed_text,
         }
     }
 
-    grid->columns = malloc_f((grid->max_x + 1) * sizeof(uint16_t *));
+    grid->columns = malloc_b((grid->max_x + 1) * sizeof(uint16_t *));
 
     for (i = 0; i <= grid->max_x; i++) {
-        grid->columns[i] = calloc_f(grid->max_y + 1, sizeof(uint16_t));
+        grid->columns[i] = calloc_b(grid->max_y + 1, sizeof(uint16_t));
     }
 }
 

@@ -113,7 +113,7 @@ parse_lines_into_calls_and_cards(parsed_text_type   parsed_text,
         current_line += NUM_BINGO_COLUMNS;
     }
 
-    bingo_cards->cards = malloc_f(
+    bingo_cards->cards = malloc_b(
                              bingo_cards->num_cards * sizeof(bingo_card_type));
 
     for (current_card = 0, current_line = 2;
@@ -328,7 +328,7 @@ filter_cards_to_non_winners(bingo_cards_type  bingo_cards,
         }
     }
 
-    non_winners->cards = malloc_f(
+    non_winners->cards = malloc_b(
                              non_winners->num_cards * sizeof(bingo_card_type));
 
     for (i = 0, j = 0; i < bingo_cards.num_cards; i++) {

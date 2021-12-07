@@ -236,5 +236,6 @@ def main() -> None:
             if pargs.gdb:
                 _compile()
 
+
 if __name__ == "__main__":
     main()

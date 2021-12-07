@@ -182,7 +182,7 @@ filter_numbers_array_on_matching_bit(int    **numbers_array,
         }
     }
 
-    filtered_array = malloc_f(sizeof(filtered_array) * filtered_array_len);
+    filtered_array = malloc_b(sizeof(filtered_array) * filtered_array_len);
 
     /*
      * Add the matching numbers to the new array.
@@ -295,7 +295,7 @@ find_oxygen_rating(int *numbers_array, size_t len, size_t most_sig_bit)
     size_t  current_bit;
     int     oxygen_rating;
 
-    filtered_array = malloc_f(sizeof(int) * len);
+    filtered_array = malloc_b(sizeof(int) * len);
     memcpy(filtered_array, numbers_array, sizeof(int) * len);
 
     current_bit = most_sig_bit;
@@ -349,7 +349,7 @@ find_C02_rating(int *numbers_array, size_t len, size_t most_sig_bit)
     size_t  current_bit;
     int     c02_rating;
 
-    filtered_array = malloc_f(sizeof(int) * len);
+    filtered_array = malloc_b(sizeof(int) * len);
     memcpy(filtered_array, numbers_array, sizeof(int) * len);
 
     current_bit = most_sig_bit;

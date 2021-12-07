@@ -40,18 +40,18 @@ typedef struct Parsed_Text {
 
 
 /*
- * malloc_f
+ * malloc_b
  *
  * Wrapper around malloc() which asserts the returned pointer is not NULL;
  */
-void *malloc_f(size_t size);
+void *malloc_b(size_t size);
 
 /*
- * calloc_f
+ * calloc_b
  *
  * Wrapper around calloc() which asserts the returned pointer is not NULL;
  */
-void *calloc_f(size_t nmemb, size_t size);
+void *calloc_b(size_t nmemb, size_t size);
 
 /*
  * parse_file
