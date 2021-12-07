@@ -8,7 +8,7 @@
  * LINE_BUF_SIZE:
  *     Maximum length of a line read from the file.
  */
-#define LINE_BUF_SIZE 300
+#define LINE_BUF_SIZE 600
 
 /*
  * Doc in utils.h
@@ -36,6 +36,19 @@ calloc_b(size_t nmemb, size_t size)
     assert(ptr != NULL);
 
     return (ptr);
+}
+
+/*
+ * Doc in utils.h
+ */
+void *realloc_b(void *ptr, size_t size)
+{
+    void *new_ptr = NULL;
+
+    new_ptr = realloc(ptr, size);
+    assert(new_ptr != NULL);
+
+    return (new_ptr);
 }
 
 /*

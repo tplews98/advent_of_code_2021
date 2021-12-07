@@ -54,6 +54,13 @@ void *malloc_b(size_t size);
 void *calloc_b(size_t nmemb, size_t size);
 
 /*
+ * realloc_b
+ *
+ * Wrapper around realloc() which asserts the returned pointer is not NULL;
+ */
+void *realloc_b(void *ptr, size_t size);
+
+/*
  * parse_file
  *
  * Parse text from file into parsed_text_type struct.
