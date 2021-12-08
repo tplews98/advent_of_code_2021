@@ -8,7 +8,7 @@
  * LINE_BUF_SIZE:
  *     Maximum length of a line read from the file.
  */
-#define LINE_BUF_SIZE 600
+#define LINE_BUF_SIZE 4000
 
 /*
  * Doc in utils.h
@@ -202,6 +202,83 @@ parse_binary_num_text_to_ints(parsed_text_type parsed_text)
     }
 
     return (numbers_array);
+}
+
+/*
+ * Doc in utils.h
+ */
+int
+find_sum_of_array(int *numbers_array, size_t len)
+{
+    int    total = 0;
+    size_t i;
+
+    for (i = 0; i < len; i++) {
+        total += numbers_array[i];
+    }
+
+    return (total);
+}
+
+/*
+ * Doc in utils.h
+ */
+void
+sort_numbers(int *numbers_array, size_t len)
+{
+    int i, j;
+    int key;
+
+    for (i = 1; i < len; i++) {
+        key = numbers_array[i];
+
+        /*
+         * Move elements [0..i-1] that are greater than the key to one position
+         * ahead of their current position.
+         */
+        for (j = i - 1; j >= 0 && numbers_array[j] > key; j--) {
+            numbers_array[j + 1] = numbers_array[j];
+        }
+        /* Move the key to the now empty position */
+        numbers_array[j + 1] = key;
+    }
+}
+
+/*
+ * Doc in utils.h
+ */
+int
+find_median_of_sorted_array(int *numbers_array, size_t len)
+{
+    int median;
+
+    if (len % 2 == 0) {
+        /*
+         * Even number of elements, cannot pick middle. Average two closest to
+         * middle.
+         */
+        median = (numbers_array[(len-1) / 2] + numbers_array[len / 2]) / 2;
+    } else {
+        /* Odd number of elements, can pick middle. */
+        median = numbers_array[(len-1) / 2];
+    }
+
+    return (median);
+}
+
+/*
+ * Doc in utils.h
+ */
+double
+find_mean_of_array(int *numbers_array, size_t len)
+{
+    int    total;
+    double mean;
+
+    total = find_sum_of_array(numbers_array, len);
+    mean = (double) total / len;
+
+    return (mean);
 }
 
 /*

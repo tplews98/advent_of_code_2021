@@ -209,6 +209,7 @@ def main() -> None:
                 UTILS_FILE,
                 "-o",
                 day_obj_file,
+                "-lm",
             ]
             if with_optimisation:
                 cmd.append("-O3")

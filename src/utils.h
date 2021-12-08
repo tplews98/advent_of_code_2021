@@ -7,13 +7,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <math.h>
 #include <time.h>
 
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
 /* Number of times to run main function to benchmark */
-#define NUM_TIMES_TO_BENCHMARK 500
+#define NUM_TIMES_TO_BENCHMARK 100
 
 /*
  * parsed_line
@@ -131,6 +132,62 @@ int *parse_binary_num_text_to_ints(parsed_text_type parsed_text);
  *
  */
 parsed_text_type split_string_on_char(char *text, char split_on);
+
+/*
+ * find_sum_of_array
+ *
+ * Find the sum of all numbers in an array.
+ *
+ * Argument: numbers_array
+ *     Array of integers to sum.
+ * Argument: len
+ *     Number of elements in the array.
+ *
+ * Return: int
+ */
+int find_sum_of_array(int *numbers_array, size_t len);
+
+/*
+ * sort_numbers
+ *
+ * Sort an array of integers into ascending order.
+ *
+ * Argument: numbers_array
+ *     Array of integers to sort. This is sorted inplace.
+ * Argument: len
+ *     Number of elements in the array.
+ *
+ * Return: void
+ */
+void sort_numbers(int *numbers_array, size_t len);
+
+/*
+ * find_median_of_sorted_array
+ *
+ * Find the median value of an array of ascending integers.
+ *
+ * Argument: numbers_array
+ *     Array of sorted integers to find the median of.
+ * Argument: len
+ *     Number of elements in the array.
+ *
+ * Return: int
+ */
+int find_median_of_sorted_array(int *numbers_array, size_t len);
+
+/*
+ * find_mean_of_array
+ *
+ * Find the mean of all numbers in an array.
+ *
+ * Argument: numbers_array
+ *     Array of integers to find the mean of.
+ * Argument: len
+ *     Number of elements in the array.
+ *
+ * Return: double
+ */
+double find_mean_of_array(int *numbers_array, size_t len);
 
 /*
  * print_elapsed_time
