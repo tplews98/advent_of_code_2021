@@ -8,9 +8,9 @@
 #define DIRECTION_STR_MAX_SIZE 8
 
 /* Macros for easily identifying direction strings */
-#define IS_FORWARD(str) (strncmp(str, "forward", strlen("forward") + 1) == 0)
-#define IS_DOWN(str)    (strncmp(str, "down", strlen("down") + 1) == 0)
-#define IS_UP(str)      (strncmp(str, "up", strlen("up") + 1) == 0)
+#define IS_FORWARD(str) (STRS_EQUAL(str, "forward"))
+#define IS_DOWN(str)    (STRS_EQUAL(str, "down"))
+#define IS_UP(str)      (STRS_EQUAL(str, "up"))
 
 /*
  * position_type

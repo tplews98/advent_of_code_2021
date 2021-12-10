@@ -16,6 +16,10 @@
 /* Number of times to run main function to benchmark */
 #define NUM_TIMES_TO_BENCHMARK 100
 
+/* Macro for easy string comparisons */
+#define IS_EMTPY_STR(str)      (strncmp(str, "", 2) == 0)
+#define STRS_EQUAL(str1, str2) (strncmp(str1, str2, strlen(str1) + 1) == 0)
+
 /*
  * parsed_line
  *

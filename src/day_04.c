@@ -8,9 +8,6 @@
 #define NUM_BINGO_LINES   5
 #define NUM_BINGO_COLUMNS 5
 
-/* Macro for easily identifying emtpy strings */
-#define IS_EMTPY_STR(str) (strncmp(str, "", 2) == 0)
-
 /*
  * bingo_calls_type
  *

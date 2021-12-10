@@ -341,9 +341,8 @@ identify_outputs(note_type *notes, size_t len)
              * then get it's value from the num array.
              */
             k = 0;
-            while (strncmp(notes[i].output[j],
-                           notes[i].unique_signals[k],
-                           strlen(notes[i].output[j]) + 1) != 0) {
+            while (!STRS_EQUAL(notes[i].output[j],
+                               notes[i].unique_signals[k])) {
                 k++;
             }
             /* Found the matching string, get it's value */
