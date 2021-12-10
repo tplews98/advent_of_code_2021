@@ -17,7 +17,7 @@ DAY_STR = "day_{day}"
 DAY_C_FILE = os.path.join(THIS_DIR, f"src/{DAY_STR}.c")
 DAY_INPUT = os.path.join(THIS_DIR, f"data/{DAY_STR}_input.txt")
 DAY_TEST_INPUT = os.path.join(THIS_DIR, f"data/{DAY_STR}_test_input.txt")
-DAY_OBJ_FILE = os.path.join(THIS_DIR, f"src/{DAY_STR}")
+DAY_OBJ_FILE = os.path.join(THIS_DIR, f"out/{DAY_STR}")
 UTILS_FILE = os.path.join(THIS_DIR, "src/utils.c")
 
 
@@ -200,7 +200,10 @@ def main() -> None:
         day_test_input = DAY_TEST_INPUT.format(day=f"{day:02}")
 
         def _compile(with_optimisation: bool = True) -> None:
-            """Compile a days source file"""
+            """Compile a days source file."""
+            if not os.path.exists(os.path.dirname(day_obj_file)):
+                os.mkdir(os.path.dirname(day_obj_file))
+
             cmd = [
                 "clang",
                 "-g",
@@ -219,9 +222,8 @@ def main() -> None:
             )
             run_cmd(cmd, print_time=pargs.time)
 
-        if pargs.compile:
-            _compile()
-        else:
+        def _run_day() -> None:
+            """Run a day."""
             txt_file = day_input if not pargs.test else day_test_input
 
             cmd = [day_obj_file, txt_file]
@@ -236,6 +238,11 @@ def main() -> None:
 
             if pargs.gdb:
                 _compile()
+
+        if pargs.compile:
+            _compile()
+        else:
+            _run_day()
 
 
 if __name__ == "__main__":

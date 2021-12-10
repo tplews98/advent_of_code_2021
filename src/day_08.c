@@ -43,16 +43,15 @@ typedef struct Note {
  *
  * Argument: parsed_text
  *     Parsed text struct from the day's input.
- * Argument: notes
- *     OUT: Array of notes. Caller must free this memory.
  *
- * Return: void
+ * Return: note_type
  */
-static void
-parse_text_into_note_types(parsed_text_type parsed_text, note_type **notes)
+static note_type *
+parse_text_into_note_types(parsed_text_type parsed_text)
 {
-    size_t i, j;
-    char   format_str[] = "%s %s %s %s %s %s %s %s %s %s | %s %s %s %s";
+    size_t     i, j;
+    char       format_str[] = "%s %s %s %s %s %s %s %s %s %s | %s %s %s %s";
+    note_type *notes = NULL;
 
     /*
      * Check the format string len matches the expected number of unique
@@ -60,34 +59,34 @@ parse_text_into_note_types(parsed_text_type parsed_text, note_type **notes)
      */
     assert(strlen(format_str) == ((NUM_UNIQUE_SIGNALS + NUM_OUTPUTS) * 3 + 1));
 
-    *notes = calloc_b(parsed_text.num_lines, sizeof(note_type));
+    notes = calloc_b(parsed_text.num_lines, sizeof(note_type));
 
     for (i = 0; i < parsed_text.num_lines; i++) {
         sscanf(parsed_text.lines[i].line,
                format_str,
-               (*notes)[i].unique_signals[0],
-               (*notes)[i].unique_signals[1],
-               (*notes)[i].unique_signals[2],
-               (*notes)[i].unique_signals[3],
-               (*notes)[i].unique_signals[4],
-               (*notes)[i].unique_signals[5],
-               (*notes)[i].unique_signals[6],
-               (*notes)[i].unique_signals[7],
-               (*notes)[i].unique_signals[8],
-               (*notes)[i].unique_signals[9],
-               (*notes)[i].output[0],
-               (*notes)[i].output[1],
-               (*notes)[i].output[2],
-               (*notes)[i].output[3]);
+               notes[i].unique_signals[0],
+               notes[i].unique_signals[1],
+               notes[i].unique_signals[2],
+               notes[i].unique_signals[3],
+               notes[i].unique_signals[4],
+               notes[i].unique_signals[5],
+               notes[i].unique_signals[6],
+               notes[i].unique_signals[7],
+               notes[i].unique_signals[8],
+               notes[i].unique_signals[9],
+               notes[i].output[0],
+               notes[i].output[1],
+               notes[i].output[2],
+               notes[i].output[3]);
 
         /* Sort strings so they are easier to deal with */
         for (j = 0; j < NUM_UNIQUE_SIGNALS; j++) {
-            sort_string((*notes)[i].unique_signals[j],
-                        strlen((*notes)[i].unique_signals[j]));
+            sort_string(notes[i].unique_signals[j],
+                        strlen(notes[i].unique_signals[j]));
         }
         for (j = 0; j < NUM_OUTPUTS; j++) {
-            sort_string((*notes)[i].output[j],
-                        strlen((*notes)[i].output[j]));
+            sort_string(notes[i].output[j],
+                        strlen(notes[i].output[j]));
         }
 
         /*
@@ -95,12 +94,14 @@ parse_text_into_note_types(parsed_text_type parsed_text, note_type **notes)
          * the display) so we know they have not yet been identified.
          */
         for (j = 0; j < NUM_UNIQUE_SIGNALS; j++) {
-            (*notes)[i].unique_signals_nums[j] = 100;
+            notes[i].unique_signals_nums[j] = 100;
         }
         for (j = 0; j < NUM_OUTPUTS; j++) {
-            (*notes)[i].output_nums[j] = 100;
+            notes[i].output_nums[j] = 100;
         }
     }
+
+    return (notes);
 }
 
 /*
@@ -116,7 +117,7 @@ parse_text_into_note_types(parsed_text_type parsed_text, note_type **notes)
  *
  * Return: size_t
  */
-size_t
+static size_t
 find_num_1_4_7_8_in_output(note_type *notes, size_t len)
 {
     size_t i, j;
@@ -149,7 +150,7 @@ find_num_1_4_7_8_in_output(note_type *notes, size_t len)
  *
  * Return: void
  */
-void
+static void
 identify_1_4_7_8s(note_type *notes, size_t len)
 {
     size_t i, j;
@@ -183,7 +184,7 @@ identify_1_4_7_8s(note_type *notes, size_t len)
  *
  * Return: void
  */
-void
+static void
 identify_0_2_3_5_6_9s(note_type *notes, size_t len)
 {
     size_t i, j, k;
@@ -328,7 +329,7 @@ identify_0_2_3_5_6_9s(note_type *notes, size_t len)
  *
  * Return: void
  */
-void
+static void
 identify_outputs(note_type *notes, size_t len)
 {
     size_t i, j, k;
@@ -364,7 +365,7 @@ identify_outputs(note_type *notes, size_t len)
  *
  * Return: int
  */
-int
+static int
 find_sum_of_outputs(note_type *notes, size_t len)
 {
     size_t i, j;
@@ -406,7 +407,7 @@ runner(char *file_name, bool print_output)
 
     parsed_text = parse_file(file_name);
 
-    parse_text_into_note_types(parsed_text, &notes);
+    notes = parse_text_into_note_types(parsed_text);
 
     num_1_4_7_8s = find_num_1_4_7_8_in_output(notes, parsed_text.num_lines);
     if (print_output) {
