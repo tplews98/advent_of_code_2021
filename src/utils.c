@@ -248,6 +248,30 @@ sort_numbers(int *numbers_array, size_t len)
 /*
  * Doc in utils.h
  */
+void
+sort_long_numbers(size_t *numbers_array, size_t len)
+{
+    long int i, j;
+    size_t   key;
+
+    for (i = 1; i < len; i++) {
+        key = numbers_array[i];
+
+        /*
+         * Move elements [0..i-1] that are greater than the key to one position
+         * ahead of their current position.
+         */
+        for (j = i - 1; j >= 0 && numbers_array[j] > key; j--) {
+            numbers_array[j + 1] = numbers_array[j];
+        }
+        /* Move the key to the now empty position */
+        numbers_array[j + 1] = key;
+    }
+}
+
+/*
+ * Doc in utils.h
+ */
 int
 find_median_of_sorted_array(int *numbers_array, size_t len)
 {

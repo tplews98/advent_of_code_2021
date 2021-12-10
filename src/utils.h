@@ -17,7 +17,7 @@
 /* Number of times to run main function to benchmark */
 #define NUM_TIMES_TO_BENCHMARK 100
 
-/* Macro for easy string comparisons */
+/* Macros for easy string comparisons */
 #define IS_EMTPY_STR(str)      (strncmp(str, "", 2) == 0)
 #define STRS_EQUAL(str1, str2) (strncmp(str1, str2, strlen(str1) + 1) == 0)
 
@@ -148,6 +148,20 @@ int find_sum_of_array(int *numbers_array, size_t len);
  * Return: void
  */
 void sort_numbers(int *numbers_array, size_t len);
+
+/*
+ * sort_long_numbers
+ *
+ * Sort an array of unsigned long integers into ascending order.
+ *
+ * Argument: numbers_array
+ *     Array of integers to sort. This is sorted inplace.
+ * Argument: len
+ *     Number of elements in the array.
+ *
+ * Return: void
+ */
+void sort_long_numbers(size_t *numbers_array, size_t len);
 
 /*
  * find_median_of_sorted_array
