@@ -165,6 +165,7 @@ free_parsed_text(parsed_text_type parsed_text)
         }
         free(parsed_text.lines);
         parsed_text.lines = NULL;
+        parsed_text.num_lines = 0;
     }
 }
 
