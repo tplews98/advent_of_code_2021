@@ -284,6 +284,43 @@ find_mean_of_array(int *numbers_array, size_t len)
 /*
  * Doc in utils.h
  */
+void
+sort_string(char *string, size_t len)
+{
+    int  i, j;
+    char key;
+
+    for (i = 1; i < len; i++) {
+        key = string[i];
+
+        /*
+         * Move elements [0..i-1] that are greater than the key to one position
+         * ahead of their current position.
+         */
+        for (j = i - 1; j >= 0 && string[j] > key; j--) {
+            string[j + 1] = string[j];
+        }
+        /* Move the key to the now empty position */
+        string[j + 1] = key;
+    }
+}
+
+/*
+ * Doc in utils.h
+ */
+bool
+is_str_in_str(char *string_1, char *string_2)
+{
+   char *substring = NULL;
+
+   substring = strstr(string_1, string_2);
+
+   return (substring != NULL);
+}
+
+/*
+ * Doc in utils.h
+ */
 parsed_text_type
 split_string_on_char(char *text, char split_on)
 {
@@ -307,6 +344,7 @@ split_string_on_char(char *text, char split_on)
         token = strtok(NULL, split_on_str);
     }
     free(text_copy);
+    text_copy = NULL;
 
     parsed_text.lines = malloc_b(
                              parsed_text.num_lines * sizeof(parsed_line_type));
@@ -325,6 +363,7 @@ split_string_on_char(char *text, char split_on)
         token = strtok(NULL, split_on_str);
     }
     free(text_copy);
+    text_copy = NULL;
 
     return (parsed_text);
 }

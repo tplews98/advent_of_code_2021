@@ -117,23 +117,6 @@ int *parse_text_to_ints(parsed_text_type parsed_text);
 int *parse_binary_num_text_to_ints(parsed_text_type parsed_text);
 
 /*
- * split_string_on_char
- *
- * Split given text on a character. If there are consecutive characters which
- * are all the split_on character, they are ignored (only split once and rest
- * do not caused another split but are skipped over).
- *
- * Argument: text
- *     Text to split on.
- * Argument: split_on
- *     Character to split on.
- *
- * Return: parsed_text_type
- *
- */
-parsed_text_type split_string_on_char(char *text, char split_on);
-
-/*
  * find_sum_of_array
  *
  * Find the sum of all numbers in an array.
@@ -188,6 +171,51 @@ int find_median_of_sorted_array(int *numbers_array, size_t len);
  * Return: double
  */
 double find_mean_of_array(int *numbers_array, size_t len);
+
+/*
+ * sort_string
+ *
+ * Sort an string into ascending order (based on ascii value).
+ *
+ * Argument: string
+ *     String to sort. This is sorted inplace.
+ * Argument: len
+ *     Lenght of string.
+ *
+ * Return: void
+ */
+void sort_string(char *string, size_t len);
+
+/*
+ * is_str_in_str
+ *
+ * Check if string_1 contains string_2.
+ *
+ * Argument: string_1
+ *     String to check if it contains the other.
+ * Argument: string_2
+ *     String to check if it is in the other.
+ *
+ * Return: bool
+ */
+bool is_str_in_str(char *string_1, char *string_2);
+
+/*
+ * split_string_on_char
+ *
+ * Split given text on a character. If there are consecutive characters which
+ * are all the split_on character, they are ignored (only split once and rest
+ * do not caused another split but are skipped over).
+ *
+ * Argument: text
+ *     Text to split on.
+ * Argument: split_on
+ *     Character to split on.
+ *
+ * Return: parsed_text_type
+ *
+ */
+parsed_text_type split_string_on_char(char *text, char split_on);
 
 /*
  * print_elapsed_time
