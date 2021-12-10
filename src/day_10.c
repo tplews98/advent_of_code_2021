@@ -110,14 +110,21 @@ find_syntax_errors_part_1(parsed_text_type    parsed_text,
                     (*syntax_error_lines)[(*num_syntax_error_lines)++] =
                                                      parsed_text.lines[i].line;
                     is_syntax_error = true;
-                    if (c == ')') {
-                        syntax_error_score += 3;
-                    } else if (c == ']') {
-                        syntax_error_score += 57;
-                    } else if (c == '}') {
-                        syntax_error_score += 1197;
-                    } else if (c == '>') {
-                        syntax_error_score += 25137;
+                    switch (c) {
+                        case ')':
+                            syntax_error_score += 3;
+                            break;
+                        case ']':
+                            syntax_error_score += 57;
+                            break;
+                        case '}':
+                            syntax_error_score += 1197;
+                            break;
+                        case '>':
+                            syntax_error_score += 25137;
+                            break;
+                        default:
+                            assert(false);
                     }
                     break;
                 } else {
@@ -241,14 +248,21 @@ autocomplete_lines_part_2(char   **non_syntax_error_lines,
         for (; current_buffer_pos >= 1; current_buffer_pos--) {
             c = open_bracket_buffer[current_buffer_pos - 1];
             autocomplete_score *= 5;
-            if (c == '(') {
-                autocomplete_score += 1;
-            } else if (c == '[') {
-                autocomplete_score += 2;
-            } else if (c == '{') {
-                autocomplete_score += 3;
-            } else if (c == '<') {
-                autocomplete_score += 4;
+            switch (c) {
+                case '(':
+                    autocomplete_score += 1;
+                    break;
+                case '[':
+                    autocomplete_score += 2;
+                    break;
+                case '{':
+                    autocomplete_score += 3;
+                    break;
+                case '<':
+                    autocomplete_score += 4;
+                    break;
+                default:
+                    assert(false);
             }
         }
         autocomplete_scores[i] = autocomplete_score;
