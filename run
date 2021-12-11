@@ -52,20 +52,20 @@ class Day:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.day})"
 
-    def check_day_exists(self, check_obj_file: bool = False) -> None:
+    def check_day_exists(self, is_compile: bool = False) -> None:
         """Check the days .c file and input exist. Raises an error if not."""
-        files_to_check = [
-            self.c_file,
-            self.input,
-            self.test_input,
-        ]
+        files_to_check = [self.c_file]
+
+        if not is_compile:
+            files_to_check.extend([self.input, self.test_input])
+
         for file_path in files_to_check:
             if not os.path.exists(file_path):
                 raise FileNotFoundError(
                     f"'{file_path}' does not exist, cannot run for this day"
                 )
 
-        if check_obj_file:
+        if not is_compile:
             if not os.path.exists(self.obj_file):
                 raise FileNotFoundError(
                     f"'{self.obj_file}' does not exist. Try --compile first"
@@ -220,13 +220,13 @@ def get_days_to_run(pargs: argparse.Namespace) -> list[Day]:
 
     if pargs.day != "all":
         day = Day(pargs.day)
-        day.check_day_exists(check_obj_file=not pargs.compile)
+        day.check_day_exists(is_compile=pargs.compile)
         days.append(day)
     else:
         for day_int in range(1, 26):
             try:
                 day = Day(day_int)
-                day.check_day_exists(check_obj_file=not pargs.compile)
+                day.check_day_exists(is_compile=pargs.compile)
                 days.append(day)
             except FileNotFoundError:
                 # Day solution doesn't exist.
