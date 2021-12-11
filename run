@@ -11,14 +11,117 @@ import os
 import time
 
 
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+def run_cmd(cmd: list[str], *, print_time: bool = False) -> None:
+    """Run a subprocess command and optionally print the time to run it."""
+    start = time.perf_counter()
+    subprocess.run(cmd, check=True)
+    end = time.perf_counter()
+    total_time = end - start
+    if print_time:
+        if total_time > 1:
+            time_str = f"{total_time:.3f}s"
+        elif total_time > 10 ** -3:
+            time_str = f"{total_time * 10 ** 3:.3f}ms"
+        elif total_time > 10 ** -6:
+            time_str = f"{total_time * 10 ** 6:.3f}us"
+        else:
+            time_str = f"{total_time * 10 ** 9:.0f}ns"
+        print(f"Time to run (including python subprocess time): {time_str}")
 
-DAY_STR = "day_{day}"
-DAY_C_FILE = os.path.join(THIS_DIR, f"src/{DAY_STR}.c")
-DAY_INPUT = os.path.join(THIS_DIR, f"data/{DAY_STR}_input.txt")
-DAY_TEST_INPUT = os.path.join(THIS_DIR, f"data/{DAY_STR}_test_input.txt")
-DAY_OBJ_FILE = os.path.join(THIS_DIR, f"out/{DAY_STR}")
-UTILS_FILE = os.path.join(THIS_DIR, "src/utils.c")
+
+class Day:
+    """Class for running or compiling a day's source files."""
+
+    repo_root = os.path.dirname(os.path.abspath(__file__))
+    utils_file = os.path.join(repo_root, "src/utils.c")
+
+    def __init__(self, day: int) -> None:
+        if not 1 <= day <= 25:
+            raise ValueError("Day must be between 1 and 25")
+
+        self.day = day
+        day_str = f"day_{self.day:02}"
+
+        self.c_file = os.path.join(self.repo_root, f"src/{day_str}.c")
+        self.input = os.path.join(self.repo_root, f"data/{day_str}_input.txt")
+        self.test_input = os.path.join(
+            self.repo_root, f"data/{day_str}_test_input.txt"
+        )
+        self.obj_file = os.path.join(self.repo_root, f"out/{day_str}")
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.day})"
+
+    def check_day_exists(self, check_obj_file: bool = False) -> None:
+        """Check the days .c file and input exist. Raises an error if not."""
+        files_to_check = [
+            self.c_file,
+            self.input,
+            self.test_input,
+        ]
+        for file_path in files_to_check:
+            if not os.path.exists(file_path):
+                raise FileNotFoundError(
+                    f"'{file_path}' does not exist, cannot run for this day"
+                )
+
+        if check_obj_file:
+            if not os.path.exists(self.obj_file):
+                raise FileNotFoundError(
+                    f"'{self.obj_file}' does not exist. Try --compile first"
+                )
+
+    def compile(
+        self, *, with_optimisation: bool = True, print_time: bool = False
+    ) -> None:
+        """Compile the day's source file."""
+        if not os.path.exists(os.path.dirname(self.obj_file)):
+            os.mkdir(os.path.dirname(self.obj_file))
+
+        cmd = [
+            "clang",
+            "-g",
+            "-Wall",
+            self.c_file,
+            self.utils_file,
+            "-o",
+            self.obj_file,
+            "-lm",
+        ]
+        if with_optimisation:
+            cmd.append("-O3")
+        print(
+            f"----- Compiling day {self.day} with"
+            f"{'' if with_optimisation else 'out'} optimisation -----"
+        )
+        run_cmd(cmd, print_time=print_time)
+
+    def run(
+        self,
+        *,
+        test: bool = False,
+        with_valgrind: bool = False,
+        with_gdb: bool = False,
+        print_time: bool = False,
+    ) -> None:
+        """Run the day's script."""
+        if with_valgrind and with_gdb:
+            raise ValueError("Cannot run with valgrind and gdb")
+
+        txt_file = self.input if not test else self.test_input
+
+        cmd = [self.obj_file, txt_file]
+        if with_valgrind:
+            cmd.insert(0, "valgrind")
+        if with_gdb:
+            self.compile(with_optimisation=False, print_time=print_time)
+            cmd = ["gdb", "--args"] + cmd
+
+        print(f"----- Day {self.day} -----")
+        run_cmd(cmd, print_time=print_time)
+
+        if with_gdb:
+            self.compile(with_optimisation=False, print_time=print_time)
 
 
 def parse_args() -> argparse.Namespace:
@@ -105,7 +208,7 @@ def parse_args() -> argparse.Namespace:
     return pargs
 
 
-def get_days_to_run(pargs: argparse.Namespace) -> list[int]:
+def get_days_to_run(pargs: argparse.Namespace) -> list[Day]:
     """
     Find the days to run commands with.
 
@@ -113,38 +216,17 @@ def get_days_to_run(pargs: argparse.Namespace) -> list[int]:
     If pargs.day is 'all', all existing days are used.
 
     """
-
-    def check_day_exists(day: int) -> None:
-        """Check the days .c file and input exist. Raises an error if not."""
-        files_to_check = [
-            DAY_C_FILE,
-            DAY_INPUT,
-            DAY_TEST_INPUT,
-        ]
-
-        for file_path in files_to_check:
-            file_path = file_path.format(day=f"{day:02}")
-            if not os.path.exists(file_path):
-                raise FileNotFoundError(
-                    f"'{file_path}' does not exist, cannot run for this day"
-                )
-
-        if not pargs.compile:
-            file_path = DAY_OBJ_FILE.format(day=f"{day:02}")
-            if not os.path.exists(file_path):
-                raise FileNotFoundError(
-                    f"'{file_path}' does not exist. Try --compile first"
-                )
-
-    days = []
+    days: list[Day] = []
 
     if pargs.day != "all":
-        check_day_exists(pargs.day)
-        days.append(pargs.day)
+        day = Day(pargs.day)
+        day.check_day_exists(check_obj_file=not pargs.compile)
+        days.append(day)
     else:
-        for day in range(1, 26):
+        for day_int in range(1, 26):
             try:
-                check_day_exists(day)
+                day = Day(day_int)
+                day.check_day_exists(check_obj_file=not pargs.compile)
                 days.append(day)
             except FileNotFoundError:
                 # Day solution doesn't exist.
@@ -158,91 +240,32 @@ def get_days_to_run(pargs: argparse.Namespace) -> list[int]:
 
         # Check that days are consecutive, print error if any were missing for
         # which a later day exists.
-        missing_days = sorted(set(range(1, max(days))) - set(days))
+        day_ints = [day.day for day in days]
+        missing_days = sorted(set(range(1, max(day_ints))) - set(day_ints))
         if missing_days:
             print(
                 "Some days were missing where a later day exists: "
-                f"{', '.join(str(day) for day in missing_days)}"
+                f"{', '.join(str(day_int) for day_int in missing_days)}"
             )
 
     return days
 
 
-def run_cmd(cmd: list[str], *, print_time: bool = False) -> None:
-    """Run a subprocess command and optionally print the time to run it."""
-    start = time.perf_counter()
-    subprocess.run(cmd, check=True)
-    end = time.perf_counter()
-    total_time = end - start
-    if print_time:
-        if total_time > 1:
-            time_str = f"{total_time:.3f}s"
-        elif total_time > 10 ** -3:
-            time_str = f"{total_time * 10 ** 3:.3f}ms"
-        elif total_time > 10 ** -6:
-            time_str = f"{total_time * 10 ** 6:.3f}us"
-        else:
-            time_str = f"{total_time * 10 ** 9:.0f}ns"
-        print(f"Time to run (including python subprocess time): {time_str}")
-
-
 def main() -> None:
-    """
-    Main runner. Parse args and run a day's script (and optionally compile).
-    """
+    """Main runner. Parse args and compile or run a day's script."""
     pargs = parse_args()
 
     days = get_days_to_run(pargs)
     for day in days:
-        day_c_file = DAY_C_FILE.format(day=f"{day:02}")
-        day_obj_file = DAY_OBJ_FILE.format(day=f"{day:02}")
-        day_input = DAY_INPUT.format(day=f"{day:02}")
-        day_test_input = DAY_TEST_INPUT.format(day=f"{day:02}")
-
-        def _compile(with_optimisation: bool = True) -> None:
-            """Compile a days source file."""
-            if not os.path.exists(os.path.dirname(day_obj_file)):
-                os.mkdir(os.path.dirname(day_obj_file))
-
-            cmd = [
-                "clang",
-                "-g",
-                "-Wall",
-                day_c_file,
-                UTILS_FILE,
-                "-o",
-                day_obj_file,
-                "-lm",
-            ]
-            if with_optimisation:
-                cmd.append("-O3")
-            print(
-                f"----- Compiling day {day} with"
-                f"{'' if with_optimisation else 'out'} optimisation -----"
-            )
-            run_cmd(cmd, print_time=pargs.time)
-
-        def _run_day() -> None:
-            """Run a day."""
-            txt_file = day_input if not pargs.test else day_test_input
-
-            cmd = [day_obj_file, txt_file]
-            if pargs.valgrind:
-                cmd.insert(0, "valgrind")
-            if pargs.gdb:
-                _compile(with_optimisation=False)
-                cmd = ["gdb", "--args"] + cmd
-
-            print(f"----- Day {day} -----")
-            run_cmd(cmd, print_time=pargs.time)
-
-            if pargs.gdb:
-                _compile()
-
         if pargs.compile:
-            _compile()
+            day.compile(print_time=pargs.time)
         else:
-            _run_day()
+            day.run(
+                test=pargs.test,
+                with_valgrind=pargs.valgrind,
+                with_gdb=pargs.gdb,
+                print_time=pargs.time,
+            )
 
 
 if __name__ == "__main__":
