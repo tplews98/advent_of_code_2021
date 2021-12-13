@@ -20,6 +20,7 @@
 /* Macros for easy string comparisons */
 #define IS_EMTPY_STR(str)      (strncmp(str, "", 2) == 0)
 #define STRS_EQUAL(str1, str2) (strncmp(str1, str2, strlen(str1) + 1) == 0)
+#define STRS_EQUAL_WITH_SIZE(str1, str2, size) (strncmp(str1, str2, size) == 0)
 
 /*
  * parsed_line

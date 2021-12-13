@@ -362,7 +362,7 @@ split_string_on_char(char *text, char split_on)
      * Figure out how many splits we need to do to later allocate the required
      * memory.
      */
-    text_copy = strndup(text, strlen(text));
+    text_copy = strndup(text, strlen(text) + 1);
     token = strtok(text_copy, split_on_str);
     while (token != NULL) {
         parsed_text.num_lines++;
@@ -377,7 +377,7 @@ split_string_on_char(char *text, char split_on)
     /*
      * Redo the splitting, this time filling the allocated array.
      */
-    text_copy = strndup(text, strlen(text));
+    text_copy = strndup(text, strlen(text) + 1);
     token = strtok(text_copy, split_on_str);
     i = 0;
     while (token != NULL) {
@@ -429,9 +429,11 @@ run_main_func_with_benchmark(void (*func)(char *, bool), char *file_name)
 
     /* Run a final time to actually print output and print average runtime */
     func(file_name, true);
-    print_elapsed_time(
-              ((end_time.tv_sec - start_time.tv_sec) * 1000000000 +
-              (end_time.tv_nsec - start_time.tv_nsec))
-              / NUM_TIMES_TO_BENCHMARK,
-              "Runtime");
+    if (NUM_TIMES_TO_BENCHMARK > 0) {
+        print_elapsed_time(
+                ((end_time.tv_sec - start_time.tv_sec) * 1000000000 +
+                (end_time.tv_nsec - start_time.tv_nsec))
+                / NUM_TIMES_TO_BENCHMARK,
+                "Runtime");
+    }
 }
