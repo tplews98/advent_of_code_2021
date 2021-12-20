@@ -319,7 +319,8 @@ main(int argc, char **argv)
     assert(argc == 2);
     file_name = argv[1];
 
-    run_main_func_with_benchmark(runner, file_name);
+    run_main_func_with_benchmark(runner, file_name,
+                                 NUM_TIMES_TO_BENCHMARK_SMALL);
 
     return (0);
 }

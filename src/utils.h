@@ -16,7 +16,9 @@
 #define __UTILS_H__
 
 /* Number of times to run main function to benchmark */
-#define NUM_TIMES_TO_BENCHMARK 100
+#define NUM_TIMES_TO_BENCHMARK            100
+#define NUM_TIMES_TO_BENCHMARK_SMALL      25
+#define NUM_TIMES_TO_BENCHMARK_VERY_SMALL 10
 
 /* Macros for easy string comparisons */
 #define IS_EMTPY_STR(str)      (strncmp(str, "", 2) == 0)
@@ -256,7 +258,7 @@ void print_elapsed_time(double elapsed_time_ns, char *description);
 /*
  * run_main_func_with_benchmark
  *
- * Run a day's runner function NUM_TIMES_TO_BENCHMARK times and print the
+ * Run a day's runner function num_times_to_benchmark times and print the
  * average time for each run.
  *
  * Argument: func
@@ -265,10 +267,14 @@ void print_elapsed_time(double elapsed_time_ns, char *description);
  *     only be printed on the final run.
  * Argument: file_name
  *     File to read input from.
+ * Argument: num_times_to_benchmark
+ *     Number of times to run benchmark.
  *
  * Return: void
  *
  */
-void run_main_func_with_benchmark(void (*func)(char *, bool), char *file_name);
+void run_main_func_with_benchmark(void (*func)(char *, bool),
+                                  char *file_name,
+                                  int   num_times_to_benchmark);
 
 #endif /* __UTILS_H__ */

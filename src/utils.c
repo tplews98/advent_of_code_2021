@@ -414,14 +414,16 @@ print_elapsed_time(double runtime_ns, char *description)
  * Doc in utils.h
  */
 void
-run_main_func_with_benchmark(void (*func)(char *, bool), char *file_name)
+run_main_func_with_benchmark(void (*func)(char *, bool),
+                             char *file_name,
+                             int   num_times_to_benchmark)
 {
     struct timespec  start_time, end_time;
     size_t           i;
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &start_time);
 
-    for (i = 0; i < NUM_TIMES_TO_BENCHMARK; i++) {
+    for (i = 0; i < num_times_to_benchmark; i++) {
         func(file_name, false);
     }
 
@@ -429,11 +431,11 @@ run_main_func_with_benchmark(void (*func)(char *, bool), char *file_name)
 
     /* Run a final time to actually print output and print average runtime */
     func(file_name, true);
-    if (NUM_TIMES_TO_BENCHMARK > 0) {
+    if (num_times_to_benchmark > 0) {
         print_elapsed_time(
                 ((end_time.tv_sec - start_time.tv_sec) * 1000000000 +
                 (end_time.tv_nsec - start_time.tv_nsec))
-                / NUM_TIMES_TO_BENCHMARK,
+                / num_times_to_benchmark,
                 "Runtime");
     }
 }
