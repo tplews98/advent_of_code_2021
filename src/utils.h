@@ -3,14 +3,15 @@
  */
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 #include <assert.h>
-#include <sys/param.h>
+#include <ctype.h>
 #include <math.h>
 #include <time.h>
+#include <sys/param.h>
 
 #ifndef __UTILS_H__
 #define __UTILS_H__
@@ -222,6 +223,19 @@ void sort_string(char *string, size_t len);
  * Return: bool
  */
 bool is_str_in_str(char *string_1, char *string_2);
+
+/*
+ * hex_str_to_binary_str
+ *
+ * Convert a string of hexadecimal characters to a binary string. The memory of
+ * the returned string must be freed by the caller.
+ *
+ * Argument: hex_str
+ *     String of hexadecimal characters to convert to a binary string.
+ *
+ * Return: char *
+ */
+char *hex_str_to_binary_str(char *hex_str);
 
 /*
  * split_string_on_char

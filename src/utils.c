@@ -346,6 +346,49 @@ is_str_in_str(char *string_1, char *string_2)
 /*
  * Doc in utils.h
  */
+char *
+hex_str_to_binary_str(char *hex_str)
+{
+    char    binary_digits[16][5] = {"0000", "0001", "0010", "0011",
+                                    "0100", "0101", "0110", "0111",
+                                    "1000", "1001", "1010", "1011",
+                                    "1100", "1101", "1110", "1111"};
+    char   *binary_str = NULL;
+    char    c;
+    size_t  len;
+    size_t  i;
+
+    len = strlen(hex_str);
+
+    /* Skip over any 0x or 0X identifiers at the beginning of the string */
+    if (len > 2 && hex_str[0] == '0' && tolower(hex_str[1]) == 'x') {
+        hex_str += 2;
+        len -= 2;
+    }
+
+    /*
+     * Each hex digit pads to 4 binary digits, so need strlen()*4+1 bytes to
+     * hold binary string.
+     */
+    binary_str = calloc_b(len * 4 + 1, 1);
+
+    for (i = 0; i < len; i++) {
+        c = tolower(hex_str[i]);
+        if (c >= '0' && c <= '9') {
+            strncat(binary_str, binary_digits[c-'0'], 4);
+        } else if (c >= 'a' && c <= 'f') {
+            strncat(binary_str, binary_digits[c-'a'+10], 4);
+        } else {
+            assert(false);
+        }
+    }
+
+    return (binary_str);
+}
+
+/*
+ * Doc in utils.h
+ */
 parsed_text_type
 split_string_on_char(char *text, char split_on)
 {
